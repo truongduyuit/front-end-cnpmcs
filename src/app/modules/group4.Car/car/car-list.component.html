@@ -1,0 +1,193 @@
+<div [@routerTransition]>
+    <div class="m-content">
+        <div class="m-portlet m-portlet__header m-portlet-mobile">
+            <div class="m-portlet__nav">
+                <ul>
+                    <li *ngIf="isGranted('Pages.Group0.Car.Add')"><a routerLink="/app/admin/car-add"><i
+                                class="flaticon-add"></i>
+                            Thêm mới</a></li>
+                    <li [attr.disabled]="!currentId" *ngIf="isGranted('Pages.Group0.Car.Update')"><a
+                            [routerLink]="['/app/admin/car-edit', {id : currentId}]"><i class="flaticon-edit"></i> Chỉnh
+                            sửa</a></li>
+                    <!-- <li [attr.disabled]="!currentId" *ngIf="isGranted('Pages.Group0.Car.Delete')">
+                        <a (click)="delete()">
+                            <i class="flaticon-edit"></i> Xóa
+                        </a>
+                    </li> -->
+                    <li>
+                        <a (click)="search()"><i class="flaticon-search-1"></i> Search</a>
+                    </li>
+                    <li [attr.disabled]="!currentId" *ngIf="isGranted('Pages.Group0.Car.View')">
+                        <a [routerLink]="['/app/admin/car-view', {id : currentId}]">
+                            <i class="flaticon-visible"></i> Xem chi tiết
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="m-subheader">
+            <div class="d-flex align-items-center">
+                <div class="mr-auto col-xs-6">
+                    <span class="m-section__sub m-section__sub--separator">
+                        {{l("Trang chủ")}}
+                    </span>
+                    <span class="m-section__sub m-section__sub--separator active">
+                        <a routerLink="/app/admin/car">{{l("Quản lý xe")}} {{currentUserName}}</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="m-portlet m-portlet-mobile">
+            <div class="m-portlet__body">
+                <form #filterForm="ngForm" (submit)="search()">
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Mã xe</label>
+                                <input class="form-control" name="ma" [(ngModel)]="carFilterInput.ma">
+                            </div>
+                            <div class="form-group">
+                                <label>Tên xe</label>
+                                <input class="form-control" name="xe_Ten" [(ngModel)]="carFilterInput.xe_Ten">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="carType">Loại xe</label>
+                                <select id="carType" name="ContentSkin" class="form-control"
+                                    [(ngModel)]="carTypeInput.ma">
+                                    <option [ngValue]="undefined">
+                                        Tất cả
+                                    </option>
+                                    <option *ngFor="let carType of carTypeRecords" [ngValue]="carType.ma">
+                                        {{ carType.loaiXe_Ten }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn-success btn-search" type="submit">Search</button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <button type="submit" hidden></button>
+                </form>
+                <div class="row align-items-center">
+                    <!--<Primeng-TurboTable-Start>-->
+                    <div class="primeng-datatable-container">
+                        <p-table #dataTable [value]="primengTableHelper.records" [paginator]="true"
+                            [rows]="primengTableHelper.defaultRecordsCountPerPage"
+                            [rowsPerPageOptions]="primengTableHelper.predefinedRecordsCountPerPage"
+                            totalRecords="totalRecords" pageLinks="3">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>
+                                        STT
+                                    </th>
+                                    <th>
+                                        Mã xe
+                                    </th>
+                                    <th>
+                                        Tên xe
+                                    </th>
+                                    <th>
+                                        Hãng xe
+                                    </th>
+                                    <th>
+                                        Loại xe
+                                    </th>
+                                    <th>
+                                        Màu xe
+                                    </th>
+                                    <th [colSpan]="2">
+                                        Ngày đăng kiểm && Phí đăng kiểm
+                                    </th>
+                                    <th [colSpan]="2">
+                                        Ngày đóng phí đường bộ && Phí đường bộ
+                                    </th>
+                                    <th [colSpan]="2">
+                                        Ngày đóng phí bảo hiểm dân sự && Phí bảo hiểm
+                                    </th>
+                                    <th [colSpan]="2">
+                                        Bảo hiểm tự nguyện Ngày đóng phí && Phí bảo hiểm (nếu có)
+                                    </th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-record="$implicit">
+                                <tr>
+                                    <td>
+                                        <span>{{record['no']}}</span>
+                                    </td>
+                                    <td>
+                                        <span>{{record.ma}}</span>
+                                    </td>
+                                    <td>
+                                        <span>{{record.xe_Ten}}</span>
+                                    </td>
+                                    <td>
+                                        <span>{{record.loaiXe_Hang}}</span>
+                                    </td>
+                                    <td>
+                                        <span>{{record.loaiXe_Ten}}</span>
+                                    </td>
+                                    <td>
+                                        <span>{{record.xe_Mau}}</span>
+                                    </td>
+                                    <td [colSpan]="2">
+                                        {{
+                                            record.dangKiem_NgayDangKiem  &&
+                                            record.dangKiem_NgayDangKiem  | momentFormat:'L'
+                                        }}
+                                        {{
+                                            record.dangKiem_Phi ?
+                                            " && " + record.dangKiem_Phi + "VNĐ"
+                                            : "Chưa có thông tin "
+                                        }}
+                                    </td>
+                                    <td [colSpan]="2">
+                                        {{
+                                            record.dkDuongBo_NgayDangKi &&
+                                            record.dkDuongBo_NgayDangKi  | momentFormat:'L'
+                                        }}
+                                        {{
+                                            record.dkDuongBo_Phi ?
+                                            " && " + record.dkDuongBo_Phi + "VNĐ"
+                                            : "Chưa có thông tin "
+                                        }}
+                                    </td>
+                                    <td [colSpan]="2">
+                                        {{
+                                                record.baoHiemDansu_NgayDangKi &&
+                                                 record.baoHiemDansu_NgayDangKi| momentFormat:'L'
+                                            }}
+                                        {{
+                                                record.baoHiemDansu_Phi ?
+                                                " && " + record.baoHiemDansu_Phi + "VNĐ"
+                                                : "Chưa có thông tin "
+                                            }}
+                                    </td>
+                                    <td [colSpan]="2">
+                                        {{
+                                                record.baoHiemTuNguyen_NgayDangKi &&
+                                                record.baoHiemTuNguyen_NgayDangKi   | momentFormat:'L'
+                                            }}
+                                        {{
+                                                record.baoHiemTuNguyen_Phi ?
+                                                " && " + record.baoHiemTuNguyen_Phi + "VNĐ"
+                                                : "Chưa có thông tin"
+                                            }}
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+
+                    </div>
+                    <!--<Primeng-TurboTable-End>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
